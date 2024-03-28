@@ -48,7 +48,7 @@ fun LoginScreen(auth: FirebaseAuth, onLogin: () -> Unit, onLogout: () -> Unit) {
 fun LoggedIn(user: FirebaseUser, onLogout: () -> Unit) {
     var sent by remember { mutableStateOf(false) }
     val email = user.email?.substringBefore("@")
-    var message by remember {mutableStateOf("You are already logged in as $email. Verify your email to continue!")}
+    var message by remember {mutableStateOf("You are logged in as $email. Verify your email to continue!")}
     Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -57,16 +57,9 @@ fun LoggedIn(user: FirebaseUser, onLogout: () -> Unit) {
         Text(text = message, modifier = Modifier.animateContentSize(SpringSpec(Spring.DampingRatioNoBouncy, Spring.StiffnessLow)))
         Button(onClick = {
                     user.sendEmailVerification()
-                    message = "Verification Email sent! Verify and click the button below."
+                    message = "Verification Email sent! Verify and re-login to continue."
                     sent = true
                 }, enabled = !sent) {
-            Text(text = "Send Verification Email")
-        }
-        Button(onClick = {
-            user.sendEmailVerification()
-            message = "Verification Email sent! Verify and click the button below."
-            sent = true
-        }, enabled = !sent) {
             Text(text = "Send Verification Email")
         }
         Button(onClick = {
@@ -199,24 +192,32 @@ fun SignUpButton(viewModel: NotesViewModel, onLogin: () -> Unit, signOrLog: Stri
     Button (
             onClick = {
                 if (signOrLog == "Signup") {
-                    val authResult = viewModel.signUp()
+                    viewModel.signUp { authResult, exp ->
                     val toastText = when (authResult) {
                         Authentication.ConfirmPasswordMissMatch -> "Password and Confirm password must match!"
                         Authentication.InvalidEmail -> "Enter a valid student email"
                         Authentication.InvalidPass -> "Password can't be blank"
-                        Authentication.Failed -> "Authentication Failed!"
-                        Authentication.Successful -> "Authentication Success!"
+                        Authentication.Failed -> "Create Account Failed! $exp"
+                        Authentication.Successful -> "Account Created!"
                     }
                     Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
                     if (authResult == Authentication.Successful) onLogin()
+                    }
 
                 } else {
-                    viewModel.login {authResult ->
+                    viewModel.login { authResult, exp ->
                         if (authResult == Authentication.Successful) onLogin()
-
+                        else {
+                            Toast.makeText(
+                                    context,
+                                    exp,
+                                    Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             },
+            enabled = !viewModel.passMismatch || signOrLog=="Login",
             modifier = Modifier.padding(12.dp)
     ) {
         Text(text = signOrLog)

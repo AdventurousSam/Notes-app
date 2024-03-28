@@ -324,7 +324,7 @@ public class PDFView extends RelativeLayout {
 
         loadPages();
 
-        if (scrollHandle != null && !documentFitsView()) {
+        if (scrollHandle != null && documentDoesNotFitView()) {
             scrollHandle.setPageNum(currentPage + 1);
         }
 
@@ -668,8 +668,8 @@ public class PDFView extends RelativeLayout {
         }
 
         // Move to the target page
-        float localTranslationX = 0;
-        float localTranslationY = 0;
+        float localTranslationX;
+        float localTranslationY;
         SizeF size = pdfFile.getPageSize(part.getPage());
 
         if (swipeVertical) {
@@ -882,7 +882,7 @@ public class PDFView extends RelativeLayout {
         currentYOffset = offsetY;
         float positionOffset = getPositionOffset();
 
-        if (moveHandle && scrollHandle != null && !documentFitsView()) {
+        if (moveHandle && scrollHandle != null && documentDoesNotFitView()) {
             scrollHandle.setScroll(positionOffset);
         }
 
@@ -1050,12 +1050,12 @@ public class PDFView extends RelativeLayout {
      *
      * @return true if whole document can displayed at once, false otherwise
      */
-    public boolean documentFitsView() {
+    public boolean documentDoesNotFitView() {
         float len = pdfFile.getDocLen(1);
         if (swipeVertical) {
-            return len < getHeight();
+            return !(len < getHeight());
         } else {
-            return len < getWidth();
+            return !(len < getWidth());
         }
     }
 

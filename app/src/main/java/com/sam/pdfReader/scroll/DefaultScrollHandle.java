@@ -198,7 +198,7 @@ public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle 
     }
 
     private boolean isPDFViewReady() {
-        return pdfView != null && pdfView.getPageCount() > 0 && !pdfView.documentFitsView();
+        return pdfView != null && pdfView.getPageCount() > 0 && pdfView.documentDoesNotFitView();
     }
 
     @Override

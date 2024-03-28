@@ -1,4 +1,6 @@
-package com.example.compose
+@file:Suppress("unused")
+
+package com.sam.notes.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF00677E)
@@ -27,7 +29,6 @@ val md_theme_light_outline = Color(0xFF70787C)
 val md_theme_light_inverseOnSurface = Color(0xFFEFF1F2)
 val md_theme_light_inverseSurface = Color(0xFF2E3132)
 val md_theme_light_inversePrimary = Color(0xFF5BD5FA)
-val md_theme_light_shadow = Color(0xFF000000)
 val md_theme_light_surfaceTint = Color(0xFF00677E)
 val md_theme_light_outlineVariant = Color(0xFFBFC8CC)
 val md_theme_light_scrim = Color(0xFF000000)
@@ -58,10 +59,8 @@ val md_theme_dark_outline = Color(0xFF899296)
 val md_theme_dark_inverseOnSurface = Color(0xFF191C1D)
 val md_theme_dark_inverseSurface = Color(0xFFE1E3E4)
 val md_theme_dark_inversePrimary = Color(0xFF00677E)
-val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFF5BD5FA)
 val md_theme_dark_outlineVariant = Color(0xFF40484C)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 
-val seed = Color(0xFF00677E)

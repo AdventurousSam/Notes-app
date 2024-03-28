@@ -1,6 +1,5 @@
 package com.sam.notes.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,32 +30,16 @@ class NotesViewModel: ViewModel() {
         passMismatch = pass != confirmPass
     }
 
-    fun login(callback: (Authentication) -> Unit) {
-        signIn(email, pass) {
-            callback(it)
-        }
+    fun login(callback: (Authentication, String?) -> Unit) {
+        signIn(email, pass, callback)
     }
 
-    fun signUp(): Authentication {
-        var authResult = when {
-            passMismatch -> Authentication.ConfirmPasswordMissMatch
-            !email.endsWith("@students.iitmandi.ac.in") -> Authentication.InvalidEmail
-            pass.isEmpty() -> Authentication.InvalidPass
-            else -> Authentication.Successful
+    fun signUp(callback: (Authentication, String?) -> Unit){
+        when {
+            passMismatch -> callback(Authentication.ConfirmPasswordMissMatch, null)
+            !email.endsWith("@students.iitmandi.ac.in") -> callback(Authentication.InvalidEmail, null)
+            pass.isEmpty() -> callback(Authentication.InvalidPass, null)
+            else -> createUser(email, pass, callback)
         }
-        if (authResult == Authentication.Successful) {
-            createUser(email, pass).addOnCompleteListener { task ->
-                authResult = if (task.isSuccessful) {
-                    Log.d("Sign-Up", "Success")
-                    Authentication.Successful
-                } else {
-                    Log.w("Sign-Up", task.exception)
-                    Authentication.Failed
-                }
-            }
-        }
-        return authResult
     }
-
-
 }
