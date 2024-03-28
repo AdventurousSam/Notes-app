@@ -2,6 +2,7 @@ package com.sam.notes
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,8 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -91,18 +90,26 @@ fun AppScreen(
     }
 }
 
-fun signIn(email: String, pass: String, callback: (Authentication) -> Unit) {
+fun signIn(email: String, pass: String, callback: (Authentication, String?) -> Unit) {
     auth.signInWithEmailAndPassword(email, pass)
         .addOnCompleteListener {task ->
             val authResult = if (task.isSuccessful) {
                 Authentication.Successful
             } else Authentication.Failed
-            callback(authResult)
+            callback(authResult, task.exception?.message?:"")
         }
 }
 
-fun createUser(email: String, pass: String): Task<AuthResult> {
-    return auth.createUserWithEmailAndPassword(email, pass)
+fun createUser(email: String, pass: String, callback: (Authentication, String?) -> Unit) {
+    auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            Log.d("Sign-Up", "Success")
+            callback(Authentication.Successful, null)
+        } else {
+            Log.w("Sign-Up", task.exception)
+            callback(Authentication.Failed, task.exception?.localizedMessage?: "")
+        }
+    }
 }
 
 fun signOut() {
